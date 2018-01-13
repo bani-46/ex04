@@ -471,7 +471,6 @@ void print_sortedlist(){
             rl = rl->nextlinep;
             if(rl != NULL)printf(",");
         }
-        printf("\b");
         printf("\n");
         il = il->nextp;
     }

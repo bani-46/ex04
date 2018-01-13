@@ -1,4 +1,8 @@
 #include "compiler.h"
+/*todo
+ * 副プログラム宣言内でグローバル宣言を使っている
+ * クロスリファレンサに対して変なところでえんbしている
+ * */
 
 /* keyword list */
 struct KEY key[KEYWORDSIZE] = {
@@ -43,6 +47,10 @@ int main(int nc, char *np[]) {
 		printf("[ERROR]File %s can not open.\n", np[1]);
 		return 0;
 	}
+    if(init_output(np[1]) < 0) {
+        printf("[ERROR]File %s can not make.\n", np[1]);
+        return 0;
+    }
 
 	parse_program();
 

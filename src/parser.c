@@ -430,7 +430,10 @@ int variable(){//ahead_scan
 		return ERROR;
     val_type = id_count(string_attr,scope,get_linenum());
     if(val_type == ERROR){
-        return error_variable("[Variable]undefined variable.");
+		val_type = id_count(string_attr,global,get_linenum());
+		if(val_type == ERROR) {
+			return error_variable("[Variable]undefined variable.");
+		}
     }
 	token = scan();
 

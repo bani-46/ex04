@@ -179,8 +179,12 @@ extern int input_statement();
 extern int output_statement();
 extern int output_format();
 
+/* casl2.c */
+extern int init_output(char *filename);
+
 /* Else function*/
 extern int error_parse(char *mes);
 extern int error_variable(char *mes);
 extern void reset_flags();
 extern void reset_array();
+
