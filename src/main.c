@@ -38,7 +38,6 @@ struct KEY key[KEYWORDSIZE] = {
 
 
 int main(int nc, char *np[]) {
-
 	if(nc < 2) {
 		printf("[ERROR]File name id not given.\n");
 		return 0;
@@ -47,12 +46,14 @@ int main(int nc, char *np[]) {
 		printf("[ERROR]File %s can not open.\n", np[1]);
 		return 0;
 	}
-    if(init_output(np[1]) < 0) {
+    if((fp_out = init_output(np[1])) == NULL) {
         printf("[ERROR]File %s can not make.\n", np[1]);
         return 0;
     }
 
 	parse_program();
+    out_str_labels();
+	out_commmon_library();
 
 	printf("[Result]Search end of line:%d.\n",get_linenum());
 	end_scan();

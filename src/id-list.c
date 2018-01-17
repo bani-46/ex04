@@ -1,5 +1,6 @@
 #include "compiler.h"
 
+
 char *typestr[NUMOFTYPE+1] = {//todo
         "",
         "integer","char","boolean",
@@ -97,6 +98,78 @@ void free_namelist(){
     }
     name_list->nextp = NULL;
  }
+
+void out_def_names(int exp_type, char *procname){
+    struct NAMELIST *nl = name_list->nextp;
+    while(nl != NULL){
+        out_def_label(nl->name, procname);
+        nl = nl->nextp;
+    }
+}
+
+void out_val_names(int _scope){
+    struct ID *il;
+    char *procname;
+    int print_flg = 0;
+    if(_scope == global)il = globalidroot->nextp;
+    else {
+        il = localidroot->nextp;
+        procname = il->procname;
+        il = il->nextp;
+    }
+    if(il != NULL){
+        fprintf(fp_out,"\tPOP\tgr2\n");
+        print_flg = 1;
+    }
+    while(il != NULL){
+        if(il->is_para)out_val_label(il->name,procname);
+        il = il->nextp;
+    }
+    if(print_flg)fprintf(fp_out,"\tPUSH\t0,\tgr2\n");
+}
+
+char * get_label_name(char *_name,int _scope){
+    struct ID *il;
+    char *procname;
+    static char str[127];
+    if(_scope == global)il = globalidroot->nextp;
+    else {
+        il = localidroot->nextp;
+        procname = il->procname;
+        il = il->nextp;
+    }
+
+    if(il == NULL)il = globalidroot->nextp;
+    while(il != NULL) {
+        if (strcmp(_name, il->name) == 0) {
+            if(strlen(il->procname) != 0){
+                sprintf(str,"%s%%%s",_name,il->procname);
+            }else{
+                sprintf(str,"%s",_name);
+            }
+            return str;
+        }
+        il = il->nextp;
+        if(_scope == local && il == NULL)il = globalidroot->nextp;
+    }
+}
+
+int get_is_para(char *_name,int _scope){
+    struct ID *il;
+    static char str[127];
+    if(_scope == global)il = globalidroot->nextp;
+    else {
+        il = localidroot->nextp;
+        il = il->nextp;
+    }
+    while(il != NULL) {
+        if (strcmp(_name, il->name) == 0) {
+            return il->is_para;
+        }
+        il = il->nextp;
+    }
+}
+
 
 /* ID list */
 void init_globalidtab() {		/* Initialise the table */

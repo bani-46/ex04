@@ -111,6 +111,7 @@ extern int insert_namelist(char *_name,int _defline);
 extern int search_namelist(char *_name);
 extern void print_namelist();
 extern void free_namelist();
+extern char * get_names();
 /* ID list */
 extern void init_globalidtab();
 extern void init_localidtab();
@@ -179,8 +180,30 @@ extern int input_statement();
 extern int output_statement();
 extern int output_format();
 
-/* casl2.c */
-extern int init_output(char *filename);
+/* output_util.c */
+
+enum{
+    FINT = 1,
+    FCHAR,
+    FBOOL,
+    FSTR
+};
+
+extern FILE *fp_out;
+extern FILE * init_output(char *filename);
+extern void out_commmon_library();
+extern void out_def_names(int exp_type, char *procname);
+extern void out_def_label(char *_name, char *_procname);
+extern void out_val_names(int _scope);
+extern void out_val_label(char *_name, char *_procname);
+extern void init_strlist();
+extern struct STRLIST *add_strlist(char *_str,int _label_num);
+extern void insert_strlist(char *_str,int _label_num);
+extern void out_call_WRITE(char *_str, int _label_num,int format,int length);
+extern void out_str_labels();
+extern void out_call_READ(char *_name,int _is_para,int format);
+extern char * get_label_name(char *_name,int _scope);
+extern int get_is_para(char *_name,int _scope);
 
 /* Else function*/
 extern int error_parse(char *mes);
