@@ -166,7 +166,8 @@ extern int expressions();
 extern int return_statement();
 extern int assignment_statement();
 
-extern int variable();
+extern int lefthandside();
+extern int variable(char **val_name);
 extern int expression();
 extern int simple_expression();
 extern int term();
@@ -191,19 +192,22 @@ enum{
 
 extern FILE *fp_out;
 extern FILE * init_output(char *filename);
-extern void out_commmon_library();
-extern void out_def_names(int exp_type, char *procname);
-extern void out_def_label(char *_name, char *_procname);
-extern void out_val_names(int _scope);
-extern void out_val_label(char *_name, char *_procname);
+extern void asmprint_library();
+extern void asmprint_def_names(int exp_type, char *procname);
+extern void asmprint_def_label(char *_name, char *_procname);
+extern void asmprint_val_names(int _scope);
+extern void asmprint_ST_label(char *_name, char *_procname);
 extern void init_strlist();
 extern struct STRLIST *add_strlist(char *_str,int _label_num);
 extern void insert_strlist(char *_str,int _label_num);
-extern void out_call_WRITE(char *_str, int _label_num,int format,int length);
-extern void out_str_labels();
-extern void out_call_READ(char *_name,int _is_para,int format);
+extern void asmprint_call_WRITE(char *_str, int _label_num, int format, int length);
+extern void asmprint_str_labels();
 extern char * get_label_name(char *_name,int _scope);
 extern int get_is_para(char *_name,int _scope);
+extern int get_is_array(char *_name,int _scope);
+extern void insert_para(struct ID *_node);
+extern void init_paraidtab();
+extern void free_paralist();
 
 /* Else function*/
 extern int error_parse(char *mes);

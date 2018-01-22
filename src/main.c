@@ -52,8 +52,6 @@ int main(int nc, char *np[]) {
     }
 
 	parse_program();
-    out_str_labels();
-	out_commmon_library();
 
 	printf("[Result]Search end of line:%d.\n",get_linenum());
 	end_scan();

@@ -29,7 +29,7 @@ struct ID {
 	int definenum;
 	struct LINE *irefp;
 	struct ID *nextp;
-}  *globalidroot,*localidroot,*sortedidroot;
+}  *globalidroot,*localidroot,*sortedidroot,*paraidroot;
 
 struct NAMELIST{
     char *name;
@@ -99,18 +99,57 @@ void free_namelist(){
     name_list->nextp = NULL;
  }
 
-void out_def_names(int exp_type, char *procname){
+void asmprint_def_names(int exp_type, char *procname){
     struct NAMELIST *nl = name_list->nextp;
     while(nl != NULL){
-        out_def_label(nl->name, procname);
+        asmprint_def_label(nl->name, procname);
         nl = nl->nextp;
     }
 }
 
-void out_val_names(int _scope){
+void init_paraidtab() {		/* Initialise the table */
     struct ID *il;
+    il = add_idlist("\0","\0",0,0,0,0,NULL);
+    paraidroot = il;
+}
+
+
+void insert_para(struct ID *_node){
+    struct ID *il,*new;
+    char *c,*pc;
+    il= paraidroot;
+
+    new = (struct ID *) malloc(sizeof(struct ID));
+    c = (char *) malloc(strlen(_node->name) + 1);
+    pc = (char *) malloc(strlen(_node->procname) + 1);
+
+    strcpy(c,_node->name);
+    new->name = c;
+    strcpy(pc,_node->procname);
+    new->procname = pc;
+
+    new->nextp = NULL;
+
+    new->nextp = il->nextp;
+    il->nextp = new;
+}
+
+void free_paralist() {
+    struct ID *pl, *temp;
+    pl = paraidroot;
+    while (pl != NULL) {
+        temp = pl->nextp;
+        free(pl);
+        pl = temp;
+    }
+}
+
+void asmprint_val_names(int _scope){
+    struct ID *il,*pl;
     char *procname;
     int print_flg = 0;
+    init_paraidtab();
+
     if(_scope == global)il = globalidroot->nextp;
     else {
         il = localidroot->nextp;
@@ -122,9 +161,18 @@ void out_val_names(int _scope){
         print_flg = 1;
     }
     while(il != NULL){
-        if(il->is_para)out_val_label(il->name,procname);
+        if(il->is_para){
+            //is_paraを別のリストにぶち込む、逆順
+            insert_para(il);
+        }
         il = il->nextp;
     }
+    pl = paraidroot->nextp;
+    while(pl != NULL){
+        asmprint_ST_label(pl->name, procname);
+        pl = pl->nextp;
+    }
+    free_paralist();
     if(print_flg)fprintf(fp_out,"\tPUSH\t0,\tgr2\n");
 }
 
@@ -168,6 +216,32 @@ int get_is_para(char *_name,int _scope){
         }
         il = il->nextp;
     }
+    if(_scope == local){
+        il = globalidroot->nextp;
+        while(il != NULL) {
+            if (strcmp(_name, il->name) == 0) {
+                return il->is_para;
+            }
+            il = il->nextp;
+        }
+    }
+    return ERROR;
+}
+
+int get_is_array(char *_name,int _scope){
+    struct ID *il;
+    if(_scope == global)il = globalidroot->nextp;
+    else il = localidroot->nextp;
+
+    while (il != NULL){
+        if(strcmp(_name,il->name) == 0){
+            if(il->itp->ttype >= TPARRAY
+               && il->itp->ttype != TPPROC)
+                return 1;
+        }
+        il = il->nextp;
+    }
+    return ERROR;
 }
 
 
