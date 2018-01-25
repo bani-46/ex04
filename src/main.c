@@ -2,6 +2,7 @@
 /*todo
  * 副プログラム宣言内でグローバル宣言を使っている
  * クロスリファレンサに対して変なところでえんbしている
+ * regist_proctypeのparatp.>NULL
  * */
 
 /* keyword list */

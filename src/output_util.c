@@ -12,6 +12,7 @@
  *
  */
 
+/* str list*/
 struct STRLIST{
     char *str;
     int label;
@@ -42,6 +43,7 @@ void insert_strlist(char *_str,int _label_num){
     sl->nextp = add_strlist(_str,_label_num);
 }
 
+/* for asmprint */
 FILE * init_output(char *filename){
     char str[MAXSTRSIZE];
     sprintf(str,"%s.csl",filename);
@@ -54,10 +56,15 @@ FILE * init_output(char *filename){
     }
 }
 
-void asmprint_def_label(char *_name, char *_procname){
-    if(strlen(_procname) != 0)
-        fprintf(fp_out,"$%s%%%s\tDC\t0\n",_name,_procname);
-    else fprintf(fp_out,"$%s\tDC\t0\n",_name);
+void asmprint_def_label(char *_name, char *_procname,int is_array){
+    if(strlen(_procname) != 0) {
+        if(is_array)fprintf(fp_out, "$%s%%%s\tDS\t%d\n", _name, _procname,num_attr);
+        else fprintf(fp_out, "$%s%%%s\tDC\t0\n", _name, _procname);
+    }
+    else {
+        if(is_array)fprintf(fp_out,"$%s\tDS\t%d\n",_name,num_attr);
+        else fprintf(fp_out,"$%s\tDC\t0\n",_name);
+    }
 }
 
 void asmprint_ST_label(char *_name, char *_procname){
@@ -68,7 +75,6 @@ void asmprint_ST_label(char *_name, char *_procname){
 }
 
 void asmprint_call_WRITE(char *_str, int _label_num, int format, int length){
-//    printf("\n[DEBUG]%d\n",length);
     switch(format) {
         case FINT:
             if(length <= 0){
